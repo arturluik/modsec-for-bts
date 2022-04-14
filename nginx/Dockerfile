@@ -19,7 +19,8 @@ ENV PARANOIA=1 \
     MODSEC_RESP_BODY_ACCESS=on \
     MODSEC_RESP_BODY_LIMIT=1048576 \
     MODSEC_PCRE_MATCH_LIMIT=100000 \
-    MODSEC_PCRE_MATCH_LIMIT_RECURSION=100000
+    MODSEC_PCRE_MATCH_LIMIT_RECURSION=100000 \
+    CSP="default-src 'self'"
 
 COPY conf.d/default.conf /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/nginx.conf
