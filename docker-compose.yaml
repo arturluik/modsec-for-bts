@@ -33,7 +33,7 @@ services:
       - /lib/modules:/lib/modules:ro
 
   modsec:
-    image: ls22.wayren.ee/waf:latest
+    image: waf:latest
     ports:
       - "80:80"
       - "443:443"
