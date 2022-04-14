@@ -4,18 +4,17 @@
 How to use the image?
 
 ```
-version: "3"
+version: "2.4"
 
 services:
   web:
-    image: www
+    # Add your custom image here!!!
+    image: php:7-apache
     depends_on:
       - modsec
       - db
     environment:
       - DB_HOST=db
-      - DB_USER=postgres
-      - DB_PASS=<pass>
     networks:
       proxy: {}
 
@@ -25,9 +24,9 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=<pass>
-    volumes:
-      - ./db:/var/lib/postgresql/data
-      - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+  #  volumes:
+  #    - ./db:/var/lib/postgresql/data
+  #    - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
     networks:
       proxy: {}
 
@@ -51,14 +50,15 @@ services:
     environment:
       - BACKEND_PORT80=http://web:3000
       - BACKEND_PORT443=http://web:3000
-      - PROXY_SSL_CERT=/keys/cert.pem
-      - PROXY_SSL_CERT_KEY=/keys/privkey.pem
+    #  - PROXY_SSL_CERT=/keys/cert.pem
+    #  - PROXY_SSL_CERT_KEY=/keys/privkey.pem
+      - CSP="default-src 'self' custom.domain.ee"
 
-    volumes:
+    # volumes:
     #  - ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
     #  - ./RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
-      - ./x.org/cert.pem:/keys/cert.pem
-      - ./x.org/privkey.pem:/keys/privkey.pem
+    #  - ./x.org/cert.pem:/keys/cert.pem
+    #  - ./x.org/privkey.pem:/keys/privkey.pem
     #
     #
 
