@@ -9,21 +9,14 @@ services:
       # - ./php/:/var/www/html/
 
   modsec:
-    image: waf:latest
+    image: ls22.wayren.ee/waf:latest
     ports:
       - "80:80"
       - "443:443"
 
     environment:
-      # Change me
       - BACKEND_PORT80=http://web
       - BACKEND_PORT443=http://web
-      # End of change me
-      - PARANOIA=1
-      - BLOCKING_PARANOIA=1
-      - ANOMALY_INBOUND=5
-      - ANOMALY_OUTBOUND=4
-      - REPORTING_LEVEL=2
 
     volumes:
       - ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
