@@ -1,0 +1,33 @@
+version: "3"
+
+services:
+  web:
+    image: php:7.2.2-apache
+    depends_on:
+      - modsec
+   # volumes:
+      # - ./php/:/var/www/html/
+
+  modsec:
+    image: waf:latest
+    ports:
+      - "80:80"
+      - "443:443"
+
+    environment:
+      # Change me
+      - BACKEND_PORT80=http://web
+      - BACKEND_PORT443=http://web
+      # End of change me
+      - PARANOIA=1
+      - BLOCKING_PARANOIA=1
+      - ANOMALY_INBOUND=5
+      - ANOMALY_OUTBOUND=4
+      - REPORTING_LEVEL=2
+
+    volumes:
+      - ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
+      - ./RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
+    #  - ./server.crt:/usr/local/apache2/conf/server.crt
+    #  - ./server.key:/usr/local/apache2/conf/server.key
+    #
