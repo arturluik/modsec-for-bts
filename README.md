@@ -16,6 +16,8 @@ services:
       - DB_HOST=db
       - DB_USER=postgres
       - DB_PASS=<pass>
+    networks:
+      proxy: {}
 
   db:
     image: postgres:12
@@ -23,17 +25,29 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=<pass>
-    ports:
-      - '5432:5432'
     volumes:
       - ./db:/var/lib/postgresql/data
       - ./dump.sql:/docker-entrypoint-initdb.d/dump.sql
+    networks:
+      proxy: {}
+
+  ipv6:
+    image: robbertkl/ipv6nat
+    restart: unless-stopped
+    network_mode: "host"
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /lib/modules:/lib/modules:ro
+
   modsec:
     image: waf:latest
     ports:
       - "80:80"
       - "443:443"
-
+    networks:
+      - internal
+      - proxy
     environment:
       - BACKEND_PORT80=http://web:3000
       - BACKEND_PORT443=http://web:3000
@@ -43,7 +57,19 @@ services:
     volumes:
     #  - ./REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/REQUEST-900-EXCLUSION-RULES-BEFORE-CRS.conf
     #  - ./RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf:/etc/modsecurity.d/owasp-crs/rules/RESPONSE-999-EXCLUSION-RULES-AFTER-CRS.conf
-      - ./bob.19.berylia.org/cert.pem:/keys/cert.pem
-      - ./bob.19.berylia.org/privkey.pem:/keys/privkey.pem
+      - ./x.org/cert.pem:/keys/cert.pem
+      - ./x.org/privkey.pem:/keys/privkey.pem
     #
+    #
+
+networks:
+  internal:
+    enable_ipv6: true
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: fd00:dead:beef::/48
+  proxy:
+    external: true
 ```
