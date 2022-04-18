@@ -22,8 +22,16 @@ ENV PARANOIA=1 \
     MODSEC_PCRE_MATCH_LIMIT_RECURSION=100000 \
     CSP="default-src 'self'"
 
+RUN apk add php7-fpm
+
 COPY conf.d/default.conf /etc/nginx/conf.d/default.conf
+COPY conf.d/unexpected_403.php /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY modsecurity-override.conf /etc/modsecurity.d/modsecurity-override.conf
+COPY start.sh /start.sh
+
+RUN chmod +x /start.sh
 
 RUN cp /etc/nginx/templates/conf.d/modsecurity.conf.template /etc/nginx/conf.d/modsecurity.conf
+
+CMD ["/start.sh"]
